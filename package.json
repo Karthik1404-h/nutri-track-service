@@ -1,0 +1,16 @@
+{
+  "name": "calorie-tracker-prototype",
+  "version": "1.0.0",
+  "description": "A prototype for a calorie tracker using Gemini API.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.14.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase": "^9.6.1",
+    "firebase-admin": "^12.7.0"
+  }
+}

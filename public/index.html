@@ -1,0 +1,188 @@
+<!-- 📄 index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriTrack AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="/icon.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icon Library (Lucide Icons) -->
+    <script src="https://unpkg.com/lucide-dev@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="navbar">
+            <div class="container">
+                <a href="#" class="logo">
+                    <i data-lucide="gem"></i>
+                    <h1>NutriTrack AI</h1>
+                </a>
+                <nav class="nav-links">
+                     <button id="edit-goals-btn" class="btn btn-secondary">
+                        <i data-lucide="target"></i>
+                        <span>Edit Goals</span>
+                    </button>
+                    <button class="dark-mode-toggle">
+                        <i data-lucide="moon"></i>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="container">
+            <section id="summary" class="summary-section">
+                <h2>Today's Progress</h2>
+                <div class="progress-grid">
+                    <div class="progress-card">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <circle class="progress-ring-bg" cx="60" cy="60" r="54" />
+                            <circle id="calorie-ring" class="progress-ring-circle calories" cx="60" cy="60" r="54"/>
+                        </svg>
+                        <div class="progress-text">
+                            <span class="value" id="total-calories">0</span>
+                            <span class="label">/ <span id="calorie-goal-display">2000</span> kcal</span>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <svg class="progress-ring" viewBox="0 0 120 120">
+                            <circle class="progress-ring-bg" cx="60" cy="60" r="54" />
+                            <circle id="protein-ring" class="progress-ring-circle protein" cx="60" cy="60" r="54"/>
+                        </svg>
+                        <div class="progress-text">
+                            <span class="value" id="total-protein">0</span>
+                            <span class="label">/ <span id="protein-goal-display">120</span>g Protein</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="meal-logging" class="meal-logging-section">
+    <h2>Your Meals</h2>
+    <div class="meal-accordion">
+        <div class="meal-card" id="breakfast">
+            <div class="meal-card-header" data-meal="breakfast">
+                <div class="meal-title">
+                    <i data-lucide="sunrise"></i>
+                    <span>Breakfast</span>
+                </div>
+                <div class="meal-header-actions">
+                    <span class="meal-card-calories" id="breakfast-calories">0 kcal</span>
+                    <button class="meal-delete-btn" data-meal="breakfast" title="Clear all breakfast items">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="meal-card-body">
+                <ul class="meal-list" id="breakfast-list"></ul>
+            </div>
+        </div>
+        <div class="meal-card" id="lunch">
+            <div class="meal-card-header" data-meal="lunch">
+                 <div class="meal-title">
+                    <i data-lucide="sun"></i>
+                    <span>Lunch</span>
+                </div>
+                <div class="meal-header-actions">
+                    <span class="meal-card-calories" id="lunch-calories">0 kcal</span>
+                    <button class="meal-delete-btn" data-meal="lunch" title="Clear all lunch items">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="meal-card-body">
+                <ul class="meal-list" id="lunch-list"></ul>
+            </div>
+        </div>
+        <div class="meal-card" id="dinner">
+            <div class="meal-card-header" data-meal="dinner">
+                <div class="meal-title">
+                    <i data-lucide="sunset"></i>
+                    <span>Dinner</span>
+                </div>
+                <div class="meal-header-actions">
+                    <span class="meal-card-calories" id="dinner-calories">0 kcal</span>
+                    <button class="meal-delete-btn" data-meal="dinner" title="Clear all dinner items">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="meal-card-body">
+                <ul class="meal-list" id="dinner-list"></ul>
+            </div>
+        </div>
+        <div class="meal-card" id="snacks">
+            <div class="meal-card-header" data-meal="snacks">
+                <div class="meal-title">
+                    <i data-lucide="cookie"></i>
+                    <span>Snacks</span>
+                </div>
+                <div class="meal-header-actions">
+                    <span class="meal-card-calories" id="snacks-calories">0 kcal</span>
+                    <button class="meal-delete-btn" data-meal="snacks" title="Clear all snacks">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="meal-card-body">
+                <ul class="meal-list" id="snacks-list"></ul>
+            </div>
+        </div>
+    </div>
+</section>
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">GitHub</a>
+                </div>
+                <p>&copy; 2025 NutriTrack AI. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MODAL for Editing Goals -->
+    <div id="goal-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="modal-close-btn" data-modal-id="goal-modal"><i data-lucide="x"></i></button>
+            <h3>Edit Daily Goals</h3>
+            <div class="input-group">
+                <label for="calorie-goal">Calories (kcal)</label>
+                <input type="number" id="calorie-goal" value="2000">
+            </div>
+            <div class="input-group">
+                <label for="protein-goal">Protein (g)</label>
+                <input type="number" id="protein-goal" value="120">
+            </div>
+            <div class="modal-actions">
+                <button id="save-goals-btn" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- NEW MODAL for Meal Entry -->
+    <div id="meal-entry-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+             <button class="modal-close-btn" data-modal-id="meal-entry-modal"><i data-lucide="x"></i></button>
+            <h3 id="meal-entry-title">Add to Your Meal</h3>
+            <div id="meal-entry-content">
+                <!-- Content will be injected by script.js -->
+            </div>
+        </div>
+    </div>
+
+
+    <canvas id="canvas" style="display: none;"></canvas>
+    <script src="script.js"></script>
+    <script>
+      lucide.createIcons(); // Initialize icons
+    </script>
+</body>
+</html>
