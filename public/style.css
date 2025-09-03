@@ -431,6 +431,33 @@ input[type="file"] { display: none; }
 .modal-content .input-group input { width: 100%; font-size: 1rem; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); }
 .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 1rem;}
 
+/* 🎨 style.css (add this new code) */
+
+/* 🎨 style.css (replace existing .add-meal-item-btn rules) */
+
+.add-meal-item-btn {
+    background: none; /* No background color */
+    border: 1px solid var(--primary-color); /* A thin border */
+    color: var(--primary-color); /* Primary color text */
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border-radius: 8px; /* Slightly rounded corners */
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    margin-left: 8px; /* Space it out from calories */
+}
+
+.add-meal-item-btn:hover {
+    background-color: var(--primary-color); /* Fill with color on hover */
+    color: white; /* White text on hover */
+}
+
+/* You can remove the .add-meal-item-btn i rule as it's no longer needed */
+/* .add-meal-item-btn i {
+    width: 20px;
+    height: 20px;
+} */
 /* Responsive Design */
 @media (max-width: 768px) {
     h2 { font-size: 1.75rem; }

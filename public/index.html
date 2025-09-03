@@ -61,17 +61,20 @@
                 </div>
             </section>
 
-            <section id="meal-logging" class="meal-logging-section">
+           <section id="meal-logging" class="meal-logging-section">
     <h2>Your Meals</h2>
     <div class="meal-accordion">
         <div class="meal-card" id="breakfast">
-            <div class="meal-card-header" data-meal="breakfast">
+            <div class="meal-card-header">
                 <div class="meal-title">
                     <i data-lucide="sunrise"></i>
                     <span>Breakfast</span>
                 </div>
                 <div class="meal-header-actions">
                     <span class="meal-card-calories" id="breakfast-calories">0 kcal</span>
+                    <button class="add-meal-item-btn" data-meal="breakfast" title="Add to Breakfast">
+                        Add
+                    </button>
                     <button class="meal-delete-btn" data-meal="breakfast" title="Clear all breakfast items">
                         <i data-lucide="trash-2"></i>
                     </button>
@@ -82,13 +85,16 @@
             </div>
         </div>
         <div class="meal-card" id="lunch">
-            <div class="meal-card-header" data-meal="lunch">
+            <div class="meal-card-header">
                  <div class="meal-title">
                     <i data-lucide="sun"></i>
                     <span>Lunch</span>
                 </div>
                 <div class="meal-header-actions">
                     <span class="meal-card-calories" id="lunch-calories">0 kcal</span>
+                    <button class="add-meal-item-btn" data-meal="lunch" title="Add to Lunch">
+                        Add
+                    </button>
                     <button class="meal-delete-btn" data-meal="lunch" title="Clear all lunch items">
                         <i data-lucide="trash-2"></i>
                     </button>
@@ -99,13 +105,16 @@
             </div>
         </div>
         <div class="meal-card" id="dinner">
-            <div class="meal-card-header" data-meal="dinner">
+            <div class="meal-card-header">
                 <div class="meal-title">
                     <i data-lucide="sunset"></i>
                     <span>Dinner</span>
                 </div>
                 <div class="meal-header-actions">
                     <span class="meal-card-calories" id="dinner-calories">0 kcal</span>
+                    <button class="add-meal-item-btn" data-meal="dinner" title="Add to Dinner">
+                        Add
+                    </button>
                     <button class="meal-delete-btn" data-meal="dinner" title="Clear all dinner items">
                         <i data-lucide="trash-2"></i>
                     </button>
@@ -116,13 +125,16 @@
             </div>
         </div>
         <div class="meal-card" id="snacks">
-            <div class="meal-card-header" data-meal="snacks">
+            <div class="meal-card-header">
                 <div class="meal-title">
                     <i data-lucide="cookie"></i>
                     <span>Snacks</span>
                 </div>
                 <div class="meal-header-actions">
                     <span class="meal-card-calories" id="snacks-calories">0 kcal</span>
+                    <button class="add-meal-item-btn" data-meal="snacks" title="Add to Snacks">
+                        Add
+                    </button>
                     <button class="meal-delete-btn" data-meal="snacks" title="Clear all snacks">
                         <i data-lucide="trash-2"></i>
                     </button>
@@ -131,6 +143,12 @@
             <div class="meal-card-body">
                 <ul class="meal-list" id="snacks-list"></ul>
             </div>
+        </div>
+    </div>
+</section>
+       
+       
+           
         </div>
     </div>
 </section>

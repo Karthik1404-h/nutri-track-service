@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalProteinEl = document.getElementById('total-protein');
     const calorieGoalDisplay = document.getElementById('calorie-goal-display');
     const proteinGoalDisplay = document.getElementById('protein-goal-display');
-    const mealCardHeaders = document.querySelectorAll('.meal-card-header');
     const calorieGoalInput = document.getElementById('calorie-goal');
     const proteinGoalInput = document.getElementById('protein-goal');
     const calorieRing = document.getElementById('calorie-ring');
@@ -35,46 +34,51 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDailyData();
     updateDashboard();
     renderAllMeals();
+    initializeEventListeners(); // Initialize all event listeners
 
-    // --- Event Listeners ---
-    mealCardHeaders.forEach(header => {
-        header.addEventListener('click', () => {
-            currentMealType = header.dataset.meal;
-            const mealName = currentMealType.charAt(0).toUpperCase() + currentMealType.slice(1);
-            mealEntryTitle.textContent = `Add to ${mealName}`;
-            openInputContainer(currentMealType);
-            mealEntryModal.classList.remove('hidden');
-        });
-    });
-
-    document.getElementById('edit-goals-btn').addEventListener('click', () => goalModal.classList.remove('hidden'));
-    document.getElementById('save-goals-btn').addEventListener('click', updateGoals);
+    // --- Functions ---
     
-    modalCloseButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const modalId = btn.getAttribute('data-modal-id');
-            document.getElementById(modalId).classList.add('hidden');
-            if (modalId === 'meal-entry-modal') {
-                closeInputContainer(); 
-            }
+    function initializeEventListeners() {
+        // REMOVED the old listener on the entire header
+        // NEW listener for ONLY the '+' buttons
+        document.querySelectorAll('.add-meal-item-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentMealType = btn.dataset.meal;
+                const mealName = currentMealType.charAt(0).toUpperCase() + currentMealType.slice(1);
+                mealEntryTitle.textContent = `Add to ${mealName}`;
+                openInputContainer(currentMealType);
+                mealEntryModal.classList.remove('hidden');
+            });
         });
-    });
 
-    document.querySelectorAll('.meal-delete-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            const mealType = btn.getAttribute('data-meal');
-            if (confirm(`Are you sure you want to delete all items from ${mealType}?`)) {
-                dailyData.meals[mealType] = [];
-                recalculateTotals();
-                saveDailyData();
-                renderAllMeals();
-                updateDashboard();
-            }
+        document.getElementById('edit-goals-btn').addEventListener('click', () => goalModal.classList.remove('hidden'));
+        document.getElementById('save-goals-btn').addEventListener('click', updateGoals);
+        
+        modalCloseButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modalId = btn.getAttribute('data-modal-id');
+                document.getElementById(modalId).classList.add('hidden');
+                if (modalId === 'meal-entry-modal') {
+                    closeInputContainer(); 
+                }
+            });
         });
-    });
 
-    // --- Main Functions ---
+        document.querySelectorAll('.meal-delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const mealType = btn.getAttribute('data-meal');
+                if (confirm(`Are you sure you want to delete all items from ${mealType}?`)) {
+                    dailyData.meals[mealType] = [];
+                    recalculateTotals();
+                    saveDailyData();
+                    renderAllMeals();
+                    updateDashboard();
+                }
+            });
+        });
+    }
+
     function openInputContainer(mealType) {
         mealEntryContent.innerHTML = `
             <video class="video-feed" width="100%" height="240" autoplay playsinline style="display: none; border-radius: 8px; margin-bottom: 12px;"></video>
@@ -203,6 +207,28 @@ document.addEventListener('DOMContentLoaded', () => {
             resultDisplay.innerHTML = `<p>An error occurred. Please try again.</p>`;
         }
     }
+    
+    async function refineImage(correctionText, mealType) {
+        const resultDisplay = mealEntryContent.querySelector('.result-display');
+        resultDisplay.innerHTML = `<div class="loader"></div>`;
+        try {
+            const response = await fetch('/api/refine-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: currentImageBase64, correction: correctionText }),
+            });
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            if (data.error) {
+                resultDisplay.innerHTML = `<p>${data.error}</p>`;
+            } else {
+                displayMultiResults(data, mealType);
+            }
+        } catch (err) {
+            console.error('Error refining image:', err);
+            resultDisplay.innerHTML = `<p>An error occurred during refinement.</p>`;
+        }
+    }
 
     function displayMultiResults(items, mealType) {
         const resultDisplay = mealEntryContent.querySelector('.result-display');
@@ -292,6 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveDailyData();
         renderAllMeals();
         updateDashboard();
+        initializeEventListeners(); // Re-initialize listeners after meal is added
     }
 
     function deleteItem(mealType, itemId) {
@@ -300,6 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
         saveDailyData();
         renderAllMeals();
         updateDashboard();
+        initializeEventListeners(); // Re-initialize listeners after meal is deleted
     }
 
     function recalculateTotals() {
@@ -314,37 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
-    // 💻 script.js (replace the refineImage function)
-    async function refineImage(correctionText, mealType) {
-        const resultDisplay = mealEntryContent.querySelector('.result-display');
-        resultDisplay.innerHTML = `<div class="loader"></div>`; // Show loader
-        try {
-            // This fetch call now targets your new endpoint
-            const response = await fetch('/api/refine-image', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                // Send both the original image and the user's correction text
-                body: JSON.stringify({ image: currentImageBase64, correction: correctionText }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            if (data.error) {
-                resultDisplay.innerHTML = `<p>${data.error}</p>`;
-            } else {
-                // We can reuse the same function to display the new, refined results!
-                displayMultiResults(data, mealType);
-            }
-        } catch (err) {
-            console.error('Error refining image:', err);
-            resultDisplay.innerHTML = `<p>An error occurred during refinement.</p>`;
-        }
-    }
-
+    
     function updateDashboard() {
         totalCaloriesEl.textContent = dailyData.totals.calories;
         totalProteinEl.textContent = dailyData.totals.protein;
@@ -371,69 +369,68 @@ document.addEventListener('DOMContentLoaded', () => {
         goalModal.classList.add('hidden');
     }
     
-   // 💻 script.js (replace the entire function)
-
-function renderAllMeals() {
-    for (const mealType in dailyData.meals) {
-        const listEl = document.getElementById(`${mealType}-list`);
-        const caloriesEl = document.getElementById(`${mealType}-calories`);
-        let mealCalories = 0;
-        if (dailyData.meals[mealType].length === 0) {
-            listEl.innerHTML = `<p style="text-align:center; color: var(--subtle-text-color); padding: 1rem 0;">No items logged yet.</p>`;
-        } else {
-            listEl.innerHTML = '';
-            dailyData.meals[mealType].forEach(item => {
-                const li = document.createElement('li');
-                const nutrients = item.nutrients || {};
-                mealCalories += nutrients.calories || 0;
-                
-                li.innerHTML = `
-                    <div class="meal-item-view">
-                        <div class="meal-item-info">
-                            <span class="meal-item-name">${item.name}</span>
-                            <span class="meal-item-details">${item.portion}${item.unit} &bull; P:${nutrients.protein}g C:${nutrients.carbs}g F:${nutrients.fat}g</span>
+    function renderAllMeals() {
+        for (const mealType in dailyData.meals) {
+            const listEl = document.getElementById(`${mealType}-list`);
+            const caloriesEl = document.getElementById(`${mealType}-calories`);
+            let mealCalories = 0;
+            if (dailyData.meals[mealType].length === 0) {
+                listEl.innerHTML = `<p style="text-align:center; color: var(--subtle-text-color); padding: 1rem 0;">No items logged yet.</p>`;
+            } else {
+                listEl.innerHTML = '';
+                dailyData.meals[mealType].forEach(item => {
+                    const li = document.createElement('li');
+                    const nutrients = item.nutrients || {};
+                    mealCalories += nutrients.calories || 0;
+                    li.innerHTML = `
+                        <div class="meal-item-view">
+                            <div class="meal-item-info">
+                                <span class="meal-item-name">${item.name}</span>
+                                <span class="meal-item-details">${item.portion}${item.unit} &bull; P:${nutrients.protein}g C:${nutrients.carbs}g F:${nutrients.fat}g</span>
+                            </div>
+                            <div class="meal-item-actions">
+                                <span class="meal-item-calories">${nutrients.calories} kcal</span>
+                                <button class="meal-item-delete" title="Delete item">&times;</button>
+                            </div>
                         </div>
-                        <div class="meal-item-actions">
-                            <span class="meal-item-calories">${nutrients.calories} kcal</span>
-                            <button class="meal-item-delete" title="Delete item">&times;</button>
+                        <div class="edit-dropdown hidden">
+                            <input type="number" value="${item.portion}" class="edit-quantity"/>
+                            <select class="edit-unit">
+                                <option value="g" ${item.unit === 'g' ? 'selected' : ''}>g</option>
+                                <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ml</option>
+                                <option value="oz" ${item.unit === 'oz' ? 'selected' : ''}>oz</option>
+                                ${item.gramsPerPiece ? `<option value="pcs" ${item.unit === 'pcs' ? 'selected' : ''}>pcs</option>` : ''}
+                            </select>
                         </div>
-                    </div>
-                    <div class="edit-dropdown hidden">
-                        <input type="number" value="${item.portion}" class="edit-quantity"/>
-                        <select class="edit-unit">
-                            <option value="g" ${item.unit === 'g' ? 'selected' : ''}>g</option>
-                            <option value="ml" ${item.unit === 'ml' ? 'selected' : ''}>ml</option>
-                            <option value="oz" ${item.unit === 'oz' ? 'selected' : ''}>oz</option>
-                            ${item.gramsPerPiece ? `<option value="pcs" ${item.unit === 'pcs' ? 'selected' : ''}>pcs</option>` : ''}
-                        </select>
-                    </div>
-                `;
-                
-                li.querySelector('.meal-item-info').addEventListener('click', () => {
-                    li.querySelector('.edit-dropdown').classList.toggle('hidden');
-                });
-                
-                const editQuantityInput = li.querySelector('.edit-quantity');
-                const editUnitSelect = li.querySelector('.edit-unit');
-                const updateItemHandler = () => {
-                    const newQuantity = parseFloat(editQuantityInput.value);
-                    const newUnit = editUnitSelect.value;
-                    updateItem(mealType, item.id, newQuantity, newUnit);
-                };
-                editQuantityInput.addEventListener('change', updateItemHandler);
-                editUnitSelect.addEventListener('change', updateItemHandler);
+                    `;
+                    
+                    li.querySelector('.meal-item-info').addEventListener('click', () => {
+                        li.querySelector('.edit-dropdown').classList.toggle('hidden');
+                    });
+                    
+                    const editQuantityInput = li.querySelector('.edit-quantity');
+                    const editUnitSelect = li.querySelector('.edit-unit');
+                    const updateItemHandler = () => {
+                        const newQuantity = parseFloat(editQuantityInput.value);
+                        const newUnit = editUnitSelect.value;
+                        updateItem(mealType, item.id, newQuantity, newUnit);
+                    };
+                    editQuantityInput.addEventListener('change', updateItemHandler);
+                    editUnitSelect.addEventListener('change', updateItemHandler);
 
-                li.querySelector('.meal-item-delete').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteItem(mealType, item.id);
+                    li.querySelector('.meal-item-delete').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteItem(mealType, item.id);
+                    });
+                    listEl.appendChild(li);
                 });
-
-                listEl.appendChild(li);
-            });
+            }
+            caloriesEl.textContent = `${mealCalories} kcal`;
         }
-        caloriesEl.textContent = `${mealCalories} kcal`;
+        if (window.lucide?.createIcons) {
+            lucide.createIcons();
+        }
     }
-}
 
     function updateItem(mealType, itemId, newQuantity, newUnit) {
         const itemIndex = dailyData.meals[mealType].findIndex(i => i.id === itemId);
